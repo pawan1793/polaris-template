@@ -27,6 +27,7 @@ import DualAccounts from './components/dual/Accounts';
 import DualPlans from './components/dual/Plans';
 import DualSupport from './components/dual/Support';
 import FloHome from './components/flo/Home';
+import FloPlans from './components/flo/Plans'; // Change from dual to flo
 import FloSettings from './components/flo/Settings';
 import FloAccounts from './components/flo/Accounts';
 import FloSupport from './components/flo/Support'; 
@@ -130,6 +131,11 @@ const AppContent: React.FC = () => {
               icon: InventoryIcon,
             },
             {
+              label: 'Plans',  // Add this item
+              url: '/flo/plans',
+              icon: CreditCardIcon,
+            },
+            {
               label: 'Accounts',
               url: '/flo/accounts',
               icon: PersonFilledIcon,
@@ -171,6 +177,7 @@ const AppContent: React.FC = () => {
             <Route path="/dual/plans" element={<DualPlans/>} />
             <Route path="/dual/support" element={<DualSupport />} />
             <Route path="/flo/home" element={<FloHome />} />
+            <Route path="/flo/plans" element={<FloPlans />} />
             <Route path="/flo/history" element={<FloHistory />} />
             <Route path="/flo/inventory" element={<FlowInventory />} />
             <Route path="/flo/accounts" element={<FloAccounts />} />

@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   Page,
   Card,
@@ -9,13 +9,16 @@ import {
   Icon,
   Banner,
   Divider,
-  Button
+  Button,
+  Collapsible
 } from '@shopify/polaris';
 import {
   EmailIcon,
   ChatIcon,
-  QuestionCircleIcon, // Changed from QuestionIcon
-  InfoIcon
+  QuestionCircleIcon,
+  InfoIcon,
+  ChevronDownIcon,
+  ChevronUpIcon
 } from '@shopify/polaris-icons';
 
 // TypeScript interface for Tawk_API
@@ -29,7 +32,18 @@ declare global {
 }
 
 const ContactSupport: React.FC = () => {
-  // Handler for opening Tawk.to chat
+  // Add state to track which FAQs are open
+  const [openFaqs, setOpenFaqs] = useState<number[]>([]);
+
+  // Toggle FAQ open/closed state
+  const toggleFaq = useCallback((index: number) => {
+    setOpenFaqs(prev => 
+      prev.includes(index) 
+        ? prev.filter(i => i !== index) 
+        : [...prev, index]
+    );
+  }, []);
+
   const openLiveChat = useCallback(() => {
     if (window.Tawk_API && typeof window.Tawk_API.maximize === 'function') {
       window.Tawk_API.maximize();
@@ -43,23 +57,23 @@ const ContactSupport: React.FC = () => {
   const supportOptions = [
     {
       title: 'Email Support',
-      description: 'Get answers within 24 hours for all your account and technical questions.',
+      description: 'Get answers to all your account and technical questions.',
       icon: EmailIcon,
-      availability: '24/7 available',
       action: {
         content: 'Send an email',
         onAction: () => window.open('mailto:support@example.com', '_blank'),
+        primary: false
       },
-      color: 'var(--p-color-bg-success-subdued)' // Using Polaris variables
+      color: 'var(--p-color-bg-success-subdued)'
     },
     {
       title: 'Live Chat',
       description: 'Connect with our support team in real-time for immediate assistance.',
       icon: ChatIcon,
-      availability: 'In working hours',
       action: {
         content: 'Start live chat',
         onAction: openLiveChat,
+        primary: false
       },
       color: 'var(--p-color-bg-highlight-subdued)'
     },
@@ -67,10 +81,10 @@ const ContactSupport: React.FC = () => {
       title: 'Knowledge Base',
       description: 'Browse our comprehensive guides, tutorials, and frequently asked questions.',
       icon: QuestionCircleIcon,
-      availability: '24/7 available',
       action: {
         content: 'Browse articles',
         onAction: () => window.open('https://thaliaapps.freshdesk.com/a/solutions/categories/29000035439/folders/29000057923', '_blank'),
+        primary: false
       },
       color: 'var(--p-color-bg-info-subdued)'
     },
@@ -78,8 +92,16 @@ const ContactSupport: React.FC = () => {
 
   const faqs = [
     {
-      question: "Dual price not shown for my store?",
-      answer: "If Dual Price is not displaying on your site, you need to enable app embedding to get the dual prices displayed on the store. Check the currency formatting configuration steps mentioned in the guide here. If you are still facing the issue, let us know and we will have a look at it."
+      question: "Does the app support syncing across multiple product variants?",
+      answer: "Yes, the app can detect and synchronize the quantities for variants that share the same SKU. If you have multiple variants with the same SKU, the app will sync their quantities as needed."
+    },
+    {
+      question: "Can I undo a sync if something goes wrong?",
+      answer: "No, the app does not offer an undo feature for syncing. If something goes wrong, you will need to manually adjust the quantity either within the app or directly from your Shopify store."
+    },
+    {
+      question: "How frequently does the app check for duplicate SKUs?",
+      answer: "The app scans your store inventory for duplicate SKUs each time you manually trigger a scan. We recommend running a scan after making significant inventory changes or at least once a week to ensure all duplicates are identified and synchronized properly."
     }
   ];
 
@@ -91,12 +113,10 @@ const ContactSupport: React.FC = () => {
     >
       <BlockStack gap="800">
         <Banner
-          title="Need help? We're available Monday-Friday, 9am-5pm IST"
+          title="Need help?"
           tone="info"
           icon={InfoIcon}
-        >
-          <p>For urgent matters outside business hours, please email duplicateskusync@newaccount1607938888582.freshdesk.com</p>
-        </Banner>
+        />        
 
         <InlineGrid columns={{ xs: 1, sm: 1, md: 3 }} gap="500">
           {supportOptions.map((option, index) => (
@@ -116,8 +136,8 @@ const ContactSupport: React.FC = () => {
                         padding: "var(--p-space-500)",
                         paddingBlockEnd: 0,
                         display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between"
+                        alignItems: "center"
+                        // Remove justifyContent: "space-between" since we don't need to display availability
                       }}
                     >
                       <div
@@ -137,9 +157,6 @@ const ContactSupport: React.FC = () => {
                           accessibilityLabel={option.title}
                         />
                       </div>
-                      <Text as="span" variant="bodySm" tone="subdued">
-                        {option.availability}
-                      </Text>
                     </div>
                     
                     <Box padding="400" paddingBlockStart="0" paddingBlockEnd="0">
@@ -156,7 +173,7 @@ const ContactSupport: React.FC = () => {
                     <Box padding="400" paddingBlockStart="0" paddingBlockEnd="400">
                       <Button
                         onClick={option.action.onAction}
-                        variant="primary"
+                        variant={option.action.primary ? "primary" : "secondary"}
                         fullWidth
                       >
                         {option.action.content}
@@ -170,29 +187,6 @@ const ContactSupport: React.FC = () => {
         </InlineGrid>
 
         <Divider />
-
-        <Card>
-          <Box padding="400">
-            <BlockStack gap="400">
-              <Text as="h2" variant="headingMd">Frequently Asked Questions</Text>
-              
-              <BlockStack gap="400">
-                {faqs.map((faq, index) => (
-                  <Box key={index}>
-                    <BlockStack gap="200">
-                      <Text as="span" variant="headingSm" fontWeight="semibold">
-                        {faq.question}
-                      </Text>
-                      <Text as="p" variant="bodyMd">
-                        {faq.answer}
-                      </Text>
-                    </BlockStack>
-                  </Box>
-                ))}
-              </BlockStack>
-            </BlockStack>
-          </Box>
-        </Card>
       </BlockStack>
     </Page>
   );
