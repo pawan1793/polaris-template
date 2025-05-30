@@ -140,13 +140,12 @@ const Plans: React.FC = () => {
         <div style={{ maxWidth: "800px", marginLeft: "0", marginRight: "auto" }}>
           <InlineGrid columns={{ xs: 1, sm: 1, md: 2 }} gap="500">
             {plans.map((plan, index) => (
-              <div key={index} style={{ position: "relative", maxWidth: "350px" }}>
+              <div key={index} style={{ position: "relative", maxWidth: "300px" }}>
                 {!plan.isCurrentPlan && (
                   <div style={{
                     position: "absolute",
                     top: "-10px",
-                    left: "50%",
-                    transform: "translateX(-50%)",
+                    right: "20px",
                     backgroundColor: "#2C6ECB",
                     color: "white",
                     padding: "4px 12px",
@@ -185,7 +184,8 @@ const Plans: React.FC = () => {
                             height: '24px', 
                             display: 'flex', 
                             alignItems: 'center', 
-                            justifyContent: 'center' 
+                            justifyContent: 'center',
+                            flexShrink: 0
                           }}>
                             <Icon
                               source={feature.included ? CheckIcon : ChannelsIcon}
@@ -203,7 +203,7 @@ const Plans: React.FC = () => {
 
                     <Box paddingBlockStart="400">
                       <Button
-                        variant={plan.isCurrentPlan ? "primary" : "primary"}
+                        variant="primary"
                         tone={plan.isCurrentPlan ? "success" : undefined}
                         disabled={plan.isCurrentPlan}
                         fullWidth

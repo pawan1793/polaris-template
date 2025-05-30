@@ -283,11 +283,14 @@ export default function QuickView() {
             url={`https://admin.shopify.com/store/your-store/products/${item.shopifyId}`}
             external={true}
             removeUnderline
+            monochrome
           >
-            <Text as="h3" variant="bodyMd" fontWeight="semibold">
-              {/* Show full title */}
-              {item.title}
-            </Text>
+            <span style={{ color: "#202223" }}>
+              <Text as="h3" variant="bodyMd" fontWeight="semibold">
+                {/* Show full title */}
+                {item.title}
+              </Text>
+            </span>
           </Link>
         </div>
         

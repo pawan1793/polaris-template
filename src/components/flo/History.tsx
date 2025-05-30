@@ -14,6 +14,15 @@ import {
 import { useState, useCallback } from 'react';
 
 export default function FloHistory() {
+  // Add the CSS for hover effect
+  const linkStyle = `
+    <style>
+      .product-title-link:hover {
+        text-decoration: underline !important;
+      }
+    </style>
+  `;
+
   const [queryValue, setQueryValue] = useState('');
   const [showSyncHistory, setShowSyncHistory] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -44,10 +53,11 @@ export default function FloHistory() {
           variantAdminLink: 'https://admin.shopify.com/store/your-store-name/products/49871244984614',
         },
       ],
-      finalStock: {
-        location: 'Warehouse 1',
-        quantity: 5,
-      },
+      finalStock: [
+        { location: 'Warehouse 1', quantity: 5 },
+        { location: 'Outlet Store', quantity: 2 },
+        { location: 'Main Store', quantity: 1 },
+      ],
     },
     {
       sku: 'CAM123_NERO',
@@ -68,10 +78,11 @@ export default function FloHistory() {
           variantAdminLink: 'https://admin.shopify.com/store/your-store-name/products/49871244984616',
         },
       ],
-      finalStock: {
-        location: 'Warehouse 2',
-        quantity: -2,
-      },
+      finalStock: [
+        { location: 'Warehouse 2', quantity: -2 },
+        { location: 'Flagship Store', quantity: 3 },
+        { location: 'Distribution Center', quantity: 8 },
+      ],
     },
     {
       sku: 'TEST_SKU_1',
@@ -194,6 +205,9 @@ export default function FloHistory() {
       fullWidth 
       title="History"
     >
+      {/* Insert the style tag */}
+      <div dangerouslySetInnerHTML={{ __html: linkStyle }} />
+      
       <BlockStack gap="500"> {/* Using space-500 (20px) for spacing between cards */}
         <Card>
           <BlockStack gap="0">
@@ -227,7 +241,6 @@ export default function FloHistory() {
                       onClearAll={handleQueryClear}
                     />
                   </Box>
-
                   {filteredData.length === 0 ? (
                     <Text as='span' tone="subdued">No SKU Found</Text>
                   ) : (
@@ -237,7 +250,6 @@ export default function FloHistory() {
                         itemCount={filteredData.length}
                         selectable={false}
                         headings={[
-                          { title: 'SKU', alignment: 'center' },
                           { title: 'Details', alignment: 'center' },
                           { title: 'Final Stock', alignment: 'center' },
                         ]}
@@ -248,164 +260,210 @@ export default function FloHistory() {
                             key={index}
                             position={index}
                           >
+                            {/* Details Column - Full width table */}
                             <IndexTable.Cell>
-                              <div style={{ width: "20%", minWidth: "150px" }}>
-                                <div
-                                  style={{
-                                    wordBreak: 'break-word',
-                                    overflowWrap: 'break-word',
-                                    whiteSpace: 'normal'
-                                  }}
-                                >
-                                  <Text 
-                                    as="span" 
-                                    variant="bodySm"
-                                  >
-                                    {item.sku}
-                                  </Text>
-                                </div>
+                              <div style={{ width: "100%" }}>
+                                {/* Add heading to SKU display above the table */}
+                                <Box paddingBlockStart="200" paddingBlockEnd="200">
+                                  <InlineStack align="start" gap="200">
+                                    <Text variant="headingSm" fontWeight="semibold" as="span">
+                                      SKU:
+                                    </Text>
+                                    <Text variant="headingSm" fontWeight="medium" as="span">
+                                      {item.sku}
+                                    </Text>
+                                  </InlineStack>
+                                </Box>
+                                
+                                <Box paddingBlockStart="0">
+                                  <table style={{ 
+                                    width: '100%', 
+                                    borderCollapse: 'collapse',
+                                    borderWidth: '1px',
+                                    borderStyle: 'solid',
+                                    borderColor: 'var(--p-color-border)',
+                                    borderRadius: '8px',
+                                    overflow: 'hidden'
+                                  }}>
+                                    <thead>
+                                      {/* Table header row */}
+                                      <tr style={{ 
+                                        borderBottom: '1px solid var(--p-color-border)',
+                                        background: 'var(--p-color-bg-surface-secondary)'
+                                      }}>
+                                        <th style={{ 
+                                          padding: '12px 16px', 
+                                          textAlign: 'left',
+                                          width: '30%',
+                                          fontWeight: 'normal'
+                                        }}>
+                                          <Text as="span" variant="bodySm" fontWeight="semibold">
+                                            Order ID
+                                          </Text>
+                                        </th>
+                                        <th style={{ 
+                                          padding: '12px 16px', 
+                                          textAlign: 'left',
+                                          width: '70%',
+                                          fontWeight: 'normal'
+                                        }}>
+                                          <Text as="span" variant="bodySm" fontWeight="semibold">
+                                            Product Title
+                                          </Text>
+                                        </th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {/* Order information data row */}
+                                      <tr style={{ borderBottom: '1px solid var(--p-color-border)' }}>
+                                        <td style={{ 
+                                          padding: '12px 16px', 
+                                          textAlign: 'left',
+                                          verticalAlign: 'top'
+                                        }}>
+                                          <Text as="span" variant="bodySm" fontWeight="medium">
+                                            {item.orderId}
+                                            <br />
+                                            <Text as="span" variant="bodySm" tone="subdued" fontWeight="regular">
+                                              {item.orderDate}
+                                            </Text>
+                                          </Text>
+                                        </td>
+                                        <td style={{ 
+                                          padding: '12px 16px', 
+                                          textAlign: 'left',
+                                          verticalAlign: 'top',
+                                          wordBreak: 'break-word',
+                                          whiteSpace: 'pre-wrap',
+                                          maxWidth: '0' // Forces td to respect the table layout
+                                        }}>
+                                          <Text as="span" variant="bodySm" fontWeight="medium" breakWord>
+                                            <Link
+                                              url={item.productAdminLink}
+                                              external
+                                              removeUnderline
+                                              monochrome
+                                            >
+                                              {item.productTitle}
+                                            </Link>
+                                            <br />
+                                            <Text as="span" variant="bodySm" tone="subdued" fontWeight="regular">
+                                              Variant ID: {item.productVariantId}
+                                            </Text>
+                                          </Text>
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </Box>
+                                
+                                {/* Synced Items table */}
+                                <Box paddingBlockStart="400">
+                                  <table style={{ 
+                                    width: '100%', 
+                                    borderCollapse: 'collapse',
+                                    borderWidth: '1px',
+                                    borderStyle: 'solid',
+                                    borderColor: 'var(--p-color-border)',
+                                    borderRadius: '8px',
+                                    overflow: 'hidden'
+                                  }}>
+                                    <tbody>
+                                      {/* Table header row */}
+                                      <tr style={{ 
+                                        borderBottom: '1px solid var(--p-color-border)',
+                                        background: 'var(--p-color-bg-surface-secondary)'
+                                      }}>
+                                        <th style={{ 
+                                          padding: '12px 16px', 
+                                          textAlign: 'left',
+                                          width: '100%',
+                                          fontWeight: 'normal'
+                                        }}>
+                                          <Text as="span" variant="bodySm" fontWeight="semibold">
+                                            Synced Items
+                                          </Text>
+                                        </th>
+                                      </tr>
+                                      
+                                      {/* Synced product data rows - one for each synced item */}
+                                      {item.syncedItems.map((syncedItem, idx) => (
+                                        <tr key={idx} style={{ borderBottom: idx < item.syncedItems.length - 1 ? '1px solid var(--p-color-border)' : 'none' }}>
+                                          <td style={{ 
+                                            padding: '12px 16px', 
+                                            textAlign: 'left',
+                                            verticalAlign: 'top'
+                                          }}>
+                                            <Text as="span" variant="bodySm" fontWeight="medium">
+                                              <Link 
+                                                url={syncedItem.variantAdminLink}
+                                                external
+                                                removeUnderline
+                                                monochrome
+                                              >
+                                                {syncedItem.title}
+                                              </Link>
+                                              <br />
+                                              <Text as="span" variant="bodySm" tone="subdued" fontWeight="regular">
+                                                Variant ID: {syncedItem.variantId}
+                                              </Text>
+                                            </Text>
+                                          </td>
+                                        </tr>
+                                      ))}
+                                    </tbody>
+                                  </table>
+                                </Box>
                               </div>
                             </IndexTable.Cell>
-
+                      
+                            {/* Final Stock Column */}
                             <IndexTable.Cell>
-                              <div style={{ width: "60%", minWidth: "400px" }}>
-                                {/* Details content remains unchanged */}
-                                <BlockStack gap="400">
-                                  {/* First Card - Order Information */}
-                                  <Card padding="300">
-                                    <Box paddingBlockStart="100" paddingBlockEnd="300">
-                                      <Text variant="headingSm" as="h3" fontWeight="medium">Order Information</Text>
-                                    </Box>
-                                    <Box borderBlockStartWidth="025" borderColor="border" paddingBlockStart="300">
-                                      <div style={{ maxWidth: '100%', overflow: 'hidden' }}>
-                                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                          <tbody>
-                                            <tr style={{ borderBottom: '1px solid #e4e5e7' }}>
-                                              <td style={{ padding: '8px 4px', textAlign: 'left', width: '35%', paddingRight: '40px' }}>
-                                                <Text as="span" variant="bodySm" fontWeight="semibold">Order ID</Text>
-                                              </td>
-                                              <td style={{ padding: '8px 4px', textAlign: 'left', width: '65%' }}>
-                                                <Text as="span" variant="bodySm">
-                                                  #{item.orderId} ({item.orderDate})
-                                                </Text>
-                                              </td>
-                                            </tr>
-                                            <tr style={{ borderBottom: '1px solid #e4e5e7' }}>
-                                              <td style={{ padding: '8px 4px', textAlign: 'left', width: '35%', paddingRight: '40px' }}>
-                                                <Text as="span" variant="bodySm" fontWeight="semibold">Product Title</Text>
-                                              </td>
-                                              <td style={{ 
-                                                padding: '8px 4px', 
-                                                textAlign: 'left', 
-                                                width: '65%', 
-                                                wordBreak: 'break-word',
-                                                overflowWrap: 'break-word',
-                                                whiteSpace: 'normal' 
-                                              }}>
-                                                <Link url={item.productAdminLink}>
-                                                  <Text as="span" variant="bodySm">{item.productTitle}</Text>
-                                                </Link>
-                                              </td>
-                                            </tr>
-                                            <tr>
-                                              <td style={{ padding: '8px 4px', textAlign: 'left', width: '35%', paddingRight: '40px' }}>
-                                                <Text as="span" variant="bodySm" fontWeight="semibold">VariantID</Text>
-                                              </td>
-                                              <td style={{ padding: '8px 4px', textAlign: 'left', width: '65%' }}>
-                                                <Link url={`https://admin.shopify.com/store/your-store-name/products/${item.productVariantId}`}>
-                                                  <Text as="span" variant="bodySm">{item.productVariantId}</Text>
-                                                </Link>
-                                              </td>
-                                            </tr>
-                                          </tbody>
-                                        </table>
-                                      </div>
-                                    </Box>
-                                  </Card>
-                                  
-                                  {/* Second Card - Synced Items */}
-                                  <Card padding="300">
-                                    <Box paddingBlockStart="100" paddingBlockEnd="300">
-                                      <Text variant="headingSm" as="h3" fontWeight="medium">Synced Products</Text>
-                                    </Box>
-                                    <Box borderBlockStartWidth="025" borderColor="border">
-                                      <div style={{ maxWidth: '100%', overflow: 'hidden' }}>
-                                        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                                          <thead>
-                                            <tr style={{ borderBottom: '1px solid #e4e5e7', background: 'var(--p-color-bg-surface-secondary)' }}>
-                                              <th style={{ padding: '12px 8px', textAlign: 'left', width: '35%', paddingRight: '40px' }}>
-                                                <Text as="span" variant="bodySm" fontWeight="semibold">Variant ID</Text>
-                                              </th>
-                                              <th style={{ padding: '12px 8px', textAlign: 'left', width: '65%' }}>
-                                                <Text as="span" variant="bodySm" fontWeight="semibold">Product Title</Text>
-                                              </th>
-                                            </tr>
-                                          </thead>
-                                          <tbody>
-                                            {item.syncedItems.map((syncedItem, syncedIdx) => (
-                                              <tr key={syncedIdx} style={{ borderBottom: '1px solid #e4e5e7' }}>
-                                                <td style={{ padding: '8px 4px', textAlign: 'left', width: '35%', paddingRight: '20px' }}>
-                                                  <Text as="span" variant="bodySm">{syncedItem.variantId}</Text>
-                                                </td>
-                                                <td style={{ 
-                                                  padding: '8px 4px', 
-                                                  textAlign: 'left', 
-                                                  width: '65%', 
-                                                  wordBreak: 'break-word',
-                                                  overflowWrap: 'break-word',
-                                                  whiteSpace: 'normal'
-                                                }}>
-                                                  <Link url={syncedItem.variantAdminLink}>
-                                                    <Text as="span" variant="bodySm">{syncedItem.title}</Text>
-                                                  </Link>
-                                                </td>
-                                              </tr>
-                                            ))}
-                                          </tbody>
-                                        </table>
-                                      </div>
-                                    </Box>
-                                  </Card>
-                                </BlockStack>
-                              </div>
-                            </IndexTable.Cell>
-
-                            {/* Final Stock */}
-                            <IndexTable.Cell>
-                              <div style={{ width: "20%", minWidth: "200px" }}>
-                                <Card padding="300">
-                                  <div style={{ maxWidth: '100%', overflow: 'hidden' }}>
+                              <Box paddingInlineStart="400" paddingBlockStart="200">
+                                <Card padding="0" background="bg-surface">
+                                  <Box paddingBlockStart="0" paddingBlockEnd="0" paddingInlineStart="0" paddingInlineEnd="0">
                                     <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                       <thead>
-                                        <tr style={{ borderBottom: '1px solid #e4e5e7', background: 'var(--p-color-bg-surface-secondary)' }}>
-                                          <th style={{ padding: '12px 8px', textAlign: 'center' }}>
+                                        <tr style={{ 
+                                          borderBottom: '1px solid var(--p-color-border)',
+                                          background: 'var(--p-color-bg-surface-secondary)'
+                                        }}>
+                                          <th style={{ padding: '12px', textAlign: 'left' }}>
                                             <Text as="span" variant="bodySm" fontWeight="semibold">Location</Text>
                                           </th>
-                                          <th style={{ padding: '12px 8px', textAlign: 'center' }}>
+                                          <th style={{ padding: '12px', textAlign: 'right' }}>
                                             <Text as="span" variant="bodySm" fontWeight="semibold">Quantity</Text>
                                           </th>
                                         </tr>
                                       </thead>
                                       <tbody>
-                                        <tr>
-                                          <td style={{ padding: '8px 4px', textAlign: 'center' }}>
-                                            <Text as="span" variant="bodySm">{item.finalStock.location}</Text>
-                                          </td>
-                                          <td style={{ padding: '8px 4px', textAlign: 'center' }}>
-                                            <Text 
-                                              as='span'
-                                              variant="bodySm" 
-                                              tone={item.finalStock.quantity < 0 ? 'critical' : undefined}
-                                            >
-                                              {item.finalStock.quantity}
-                                            </Text>
-                                          </td>
-                                        </tr>
+                                        {/* Map through all locations */}
+                                        {Array.isArray(item.finalStock) ? (
+                                          item.finalStock.map((stock, idx) => (
+                                            <tr key={idx}>
+                                              <td style={{ padding: '12px', textAlign: 'left' }}>
+                                                <Text as="span" variant="bodySm">{stock.location}</Text>
+                                              </td>
+                                              <td style={{ padding: '12px', textAlign: 'right' }}>
+                                                <Text as="span" variant="bodySm">{stock.quantity}</Text>
+                                              </td>
+                                            </tr>
+                                          ))
+                                        ) : (
+                                          <tr>
+                                            <td style={{ padding: '12px', textAlign: 'left' }}>
+                                              <Text as="span" variant="bodySm">{item.finalStock.location}</Text>
+                                            </td>
+                                            <td style={{ padding: '12px', textAlign: 'right' }}>
+                                              <Text as="span" variant="bodySm">{item.finalStock.quantity}</Text>
+                                            </td>
+                                          </tr>
+                                        )}
                                       </tbody>
                                     </table>
-                                  </div>
+                                  </Box>
                                 </Card>
-                              </div>
+                              </Box>
                             </IndexTable.Cell>
                           </IndexTable.Row>
                         ))}

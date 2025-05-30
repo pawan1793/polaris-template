@@ -570,13 +570,15 @@ export default function AnalyzeProductsPage() {
 
     /* Product title link - show underline on hover */
     .product-title-link {
+      color: #202223 !important; /* Force black color */
       text-decoration: none;
       border-bottom: 1px solid transparent;
       transition: border-color 0.2s ease;
     }
     
     .product-title-link:hover {
-      border-bottom: 1px solid currentColor;
+      border-bottom: 1px solid #202223 !important;
+      text-decoration: underline !important;
     }
     
     /* Variant ID styling - clickable but no underline */
@@ -592,6 +594,29 @@ export default function AnalyzeProductsPage() {
 
     .variant-id:hover {
       color: #202223;
+    }
+
+    /* Ensure product titles wrap properly */
+    .product-detail-cell {
+      gap: 8px;
+      max-width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+    }
+    
+    .product-detail-cell > div {
+      width: 100%;
+      max-width: 300px;
+      word-break: break-all !important;
+      overflow-wrap: break-word !important;
+      display: block;
+      white-space: normal !important;
+    }
+    
+    /* Add this to force text wrapping */
+    .Polaris-Text--bodyMd {
+      white-space: normal !important;
+      word-break: break-all !important;
     }
   `;
 
@@ -649,7 +674,7 @@ export default function AnalyzeProductsPage() {
       items: [
         {
           id: 1,
-          title: 'AFH swan neck ring splint, stainless steel',
+          title: 'AFH swan neck ring splint, stainless AFH swan neck ring splint, stainless steel AFH swan neck ring splint, stainless steel steel',
           productId: '6744234238973', // Add this
           variantId: '39424166953037',
           locations: {
@@ -1444,16 +1469,37 @@ export default function AnalyzeProductsPage() {
                                       <td className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop Polaris-DataTable__Cell--firstColumn"></td>
                                       <td className="Polaris-DataTable__Cell Polaris-DataTable__Cell--verticalAlignTop">
                                         <div className="product-detail-cell">
-                                          <div>
-                                            <div style={{ marginBottom: "4px" }}>
+                                          <div style={{ 
+                                            width: "100%", 
+                                            maxWidth: "300px"
+                                          }}>
+                                            <div style={{ 
+                                              marginBottom: "4px", 
+                                              whiteSpace: "nowrap", 
+                                              overflow: "hidden", 
+                                              textOverflow: "ellipsis",
+                                              width: "100%"
+                                            }}>
                                               <Link 
                                                 url={getShopifyProductUrl(item.productId || '')} 
-                                                external 
+                                                external
+                                                monochrome
                                                 removeUnderline
                                               >
-                                                <Text as="span" variant="bodyMd" fontWeight="medium">
-                                                  {item.title}
-                                                </Text>
+                                                <span
+                                                  style={{
+                                                    display: "block",
+                                                    color: "#202223",
+                                                    whiteSpace: "nowrap",
+                                                    overflow: "hidden",
+                                                    textOverflow: "ellipsis",
+                                                    maxWidth: "100%"
+                                                  }}
+                                                >
+                                                  <Text as="span" variant="bodyMd" fontWeight="medium">
+                                                    {item.title}
+                                                  </Text>
+                                                </span>
                                               </Link>
                                             </div>
                                             <div>
